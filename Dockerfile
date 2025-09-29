@@ -14,7 +14,7 @@ RUN apk add --no-cache git
 
 COPY . /go/src/icecast_exporter
 
-RUN go build icecast_exporter.go
+RUN go build -o icecast_exporter.go .
 
 
 FROM alpine
