@@ -129,6 +129,7 @@ func NewExporter(uri string, timeout time.Duration) *Exporter {
 		}, labelNames),
 		client: &http.Client{
 			Transport: &http.Transport{
+				Proxy: nil,
 				Dial: func(netw, addr string) (net.Conn, error) {
 					c, err := net.DialTimeout(netw, addr, timeout)
 					if err != nil {
