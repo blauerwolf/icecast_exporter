@@ -1,17 +1,37 @@
 services:
-  icecast_exporter:
-    container_name: "icecast_exporter-${SERVICE_NAME}"
+  icecast-exporter:
     build:
       context: .
+      dockerfile: Dockerfile
       args:
+        # Proxy configuration for build
         HTTP_PROXY: ${HTTP_PROXY}
         HTTPS_PROXY: ${HTTPS_PROXY}
+        FTP_PROXY: ${FTP_PROXY}
         NO_PROXY: ${NO_PROXY}
-    env_file:
-      - .env
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
+        ftp_proxy: ${FTP_PROXY}
+        no_proxy: ${NO_PROXY}
+    image: icecast-exporter:latest
+    container_name: icecast-exporter-${SERVICE_NAME:-icecast}
     environment:
+      # Proxy configuration for runtime
       - HTTP_PROXY=${HTTP_PROXY}
       - HTTPS_PROXY=${HTTPS_PROXY}
+      - FTP_PROXY=${FTP_PROXY}
       - NO_PROXY=${NO_PROXY}
+      - http_proxy=${HTTP_PROXY}
+      - https_proxy=${HTTPS_PROXY}
+      - ftp_proxy=${FTP_PROXY}
+      - no_proxy=${NO_PROXY}
+      # Icecast exporter configuration
+      - ICECAST_URL=${ICECAST_URL:-http://icecast:8000}
+      - ICECAST_USERNAME=${ICECAST_USERNAME:-admin}
+      - ICECAST_PASSWORD=${ICECAST_PASSWORD:-hackme}
+      - SCRAPE_INTERVAL=${SCRAPE_INTERVAL:-30s}
+      - WEB_LISTEN_ADDRESS=${WEB_LISTEN_ADDRESS:-:9112}
+      - WEB_TELEMETRY_PATH=${WEB_TELEMETRY_PATH:-/metrics}
     ports:
       - "${PORT}:9146"
+    restart: unless-stopped
