@@ -1,5 +1,6 @@
 services:
   icecast_exporter:
+    container_name: "icecast_exporter-${SERVICE_NAME}"
     build:
       context: .
       args:
