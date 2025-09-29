@@ -1,37 +1,27 @@
-# Etapa de build
 FROM golang:alpine AS build
 
 WORKDIR /go/src/icecast_exporter
 
-# Recibe variables de build
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 ARG NO_PROXY
 
-# Exporta a la etapa de build
 ENV HTTP_PROXY=$HTTP_PROXY \
     HTTPS_PROXY=$HTTPS_PROXY \
     NO_PROXY=$NO_PROXY
 
 RUN apk add --no-cache git
 
-COPY . /go/src/icecast_exporter
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN go get .
+COPY . .
 
-# Etapa final
+RUN go build -o /icecast_exporter .
+
 FROM alpine
 
-# Recibe las mismas variables en runtime
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-ARG NO_PROXY
-
-ENV HTTP_PROXY=$HTTP_PROXY \
-    HTTPS_PROXY=$HTTPS_PROXY \
-    NO_PROXY=$NO_PROXY
-
-COPY --from=build /go/bin/icecast_exporter /icecast_exporter
+COPY --from=build /icecast_exporter /icecast_exporter
 
 EXPOSE 9146
 USER nobody
