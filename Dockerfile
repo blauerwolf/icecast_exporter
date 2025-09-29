@@ -12,12 +12,8 @@ ENV HTTP_PROXY=$HTTP_PROXY \
 
 RUN apk add --no-cache git
 
-COPY go.mod go.sum ./
-RUN go mod download
+RUN go build icecast_exporter.go
 
-COPY . .
-
-RUN go build -o /icecast_exporter .
 
 FROM alpine
 
