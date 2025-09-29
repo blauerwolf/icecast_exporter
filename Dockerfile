@@ -12,6 +12,8 @@ ENV HTTP_PROXY=$HTTP_PROXY \
 
 RUN apk add --no-cache git
 
+COPY . /go/src/icecast_exporter
+
 RUN go build icecast_exporter.go
 
 
