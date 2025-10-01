@@ -14,7 +14,7 @@ services:
     container_name: icecast-exporter-${SERVICE_NAME:-icecast}
     environment:
       # Configuración propia del exporter (sin proxy en runtime)
-      - ICECAST_URL=${ICECAST_URL:-http://192.168.1.50:8000}
+      - ICECAST_URL=${ICECAST_URL}
       - ICECAST_USERNAME=${ICECAST_USERNAME:-admin}
       - ICECAST_PASSWORD=${ICECAST_PASSWORD:-hackme}
       - SCRAPE_INTERVAL=${SCRAPE_INTERVAL:-30s}
