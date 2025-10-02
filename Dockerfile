@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o icecast_exporter 
 FROM alpine:3.22
 
 # Actualizar sistema y agregar certificados
-RUN apk --no-cache upgrade && apk --no-cache add ca-certificates
+RUN apk --no-cache upgrade && apk --no-cache add ca-certificates curl
 
 # Limpiar cualquier variable de proxy (aseguramos runtime sin proxy)
 ENV HTTP_PROXY="" \
