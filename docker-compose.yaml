@@ -21,5 +21,5 @@ services:
       - WEB_LISTEN_ADDRESS=${WEB_LISTEN_ADDRESS:-:9146}
       - WEB_TELEMETRY_PATH=${WEB_TELEMETRY_PATH:-/metrics}
     ports:
-      - "${PORT:-9146}:${WEB_LISTEN_ADDRESS:-9146}"
+      - "${PORT:-9146}:9146"
     restart: unless-stopped
