@@ -4,14 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Proxy solo para el build (si hace falta bajar dependencias Go)
         HTTP_PROXY: ${HTTP_PROXY}
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
     image: ls11-icecast-exporter:latest
     container_name: ls11-icecast-exporter-${SERVICE_NAME:-icecast}
     environment:
-      # Configuración propia del exporter (sin proxy en runtime)
       - ICECAST_URL=${ICECAST_URL}
       - ICECAST_USERNAME=${ICECAST_USERNAME:-admin}
       - ICECAST_PASSWORD=${ICECAST_PASSWORD:-hackme}
@@ -24,7 +22,7 @@ services:
     extra_hosts:
       - "streaming.provinciaradio.com.ar:${ICECAST_INTERNAL_IP}"
     command:
-      - -icecast.scrape-uri=$$ICECAST_URL
-      - -icecat.timeout=$$SCRAPE_INTERVAL
-      - -web-listen-address=9146
-      - -web.telemetry-path=$$WEB_TELEMETRY_PATH
+      - -icecast.scrape-uri=${ICECAST_URL}
+      - -icecast.timeout=${SCRAPE_INTERVAL}
+      - -web.listen-address=${WEB_LISTEN_ADDRESS}
+      - -web.telemetry-path=${WEB_TELEMETRY_PATH}
