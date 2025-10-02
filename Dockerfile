@@ -42,6 +42,7 @@ ENV HTTP_PROXY="" \
 WORKDIR /root/
 COPY --from=builder /app/icecast_exporter .
 
-EXPOSE 9112
+EXPOSE 9146
 
-CMD ["./icecast_exporter"]
+# Cambiar a ENTRYPOINT para que CMD sean los parámetros
+ENTRYPOINT ["./icecast_exporter"]
