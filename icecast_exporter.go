@@ -16,6 +16,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"io/ioutil"
@@ -78,7 +79,6 @@ type IcecastStatusSingle struct {
 	} `json:"icestats"`
 }
 
-
 // Exporter collects Icecast stats from the given URI and exports them using
 // the prometheus metrics package.
 type Exporter struct {
@@ -95,6 +95,24 @@ type Exporter struct {
 
 // NewExporter returns an initialized Exporter.
 func NewExporter(uri string, timeout time.Duration) *Exporter {
+	// Crear un transport que ignore la verificación TLS
+	transport := &http.Transport{
+		Proxy: nil,
+		Dial: func(netw, addr string) (net.Conn, error) {
+			c, err := net.DialTimeout(netw, addr, timeout)
+			if err != nil {
+				return nil, err
+			}
+			if err := c.SetDeadline(time.Now().Add(timeout)); err != nil {
+				return nil, err
+			}
+			return c, nil
+		},
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, // IGNORAR VERIFICACIÓN TLS
+		},
+	}
+
 	return &Exporter{
 		URI: uri,
 		up: prometheus.NewGauge(prometheus.GaugeOpts{
@@ -128,19 +146,7 @@ func NewExporter(uri string, timeout time.Duration) *Exporter {
 			Help:      "Timestamp of when the currently active source client connected to this mount point.",
 		}, labelNames),
 		client: &http.Client{
-			Transport: &http.Transport{
-				Proxy: nil,
-				Dial: func(netw, addr string) (net.Conn, error) {
-					c, err := net.DialTimeout(netw, addr, timeout)
-					if err != nil {
-						return nil, err
-					}
-					if err := c.SetDeadline(time.Now().Add(timeout)); err != nil {
-						return nil, err
-					}
-					return c, nil
-				},
-			},
+			Transport: transport,
 		},
 	}
 }
