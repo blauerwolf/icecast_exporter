@@ -8,8 +8,8 @@ services:
         HTTP_PROXY: ${HTTP_PROXY}
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
-    image: icecast-exporter:latest
-    container_name: icecast-exporter-${SERVICE_NAME:-icecast}
+    image: ls11-icecast-exporter:latest
+    container_name: ls11-icecast-exporter-${SERVICE_NAME:-icecast}
     environment:
       # Configuración propia del exporter (sin proxy en runtime)
       - ICECAST_URL=${ICECAST_URL}
@@ -21,3 +21,12 @@ services:
     ports:
       - "${PORT:-9146}:9146"
     restart: unless-stopped
+    extra-hosts:
+      - "streaming.provinciaradio.com.ar:${ICECAST_INTERNAL_IP}"
+    command:
+      - -icecast.scrape-uri
+      - '${ICECAST_URL}'
+      - -icecat.timeout
+      - ${SCRAPE_INTERVAL:-30s}
+      - -web-listen-address=:9146
+      - -web.telemetry-path=${WEB_TELEMETRY_PATH:-/metrics}
