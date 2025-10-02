@@ -24,8 +24,7 @@ services:
     extra_hosts:
       - "streaming.provinciaradio.com.ar:${ICECAST_INTERNAL_IP}"
     command:
-      - -icecast.scrape-uri
-      - '${ICECAST_URL}'
+      - "-icecast.scrape-uri ${ICECAST_URL}"
       - -icecat.timeout
       - ${SCRAPE_INTERVAL:-30s}
       - -web-listen-address=:9146
