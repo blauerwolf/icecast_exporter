@@ -21,7 +21,7 @@ services:
     ports:
       - "${PORT:-9146}:9146"
     restart: unless-stopped
-    extra-hosts:
+    extra_hosts:
       - "streaming.provinciaradio.com.ar:${ICECAST_INTERNAL_IP}"
     command:
       - -icecast.scrape-uri
