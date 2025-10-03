@@ -89,7 +89,7 @@ type Exporter struct {
 	totalScrapes, jsonParseFailures prometheus.Counter
 	serverStart                     prometheus.Gauge
 	listeners                       *prometheus.GaugeVec
-	slowListeners			*prometheus.GaugeVec
+	slowListeners					*prometheus.GaugeVec
 	streamStart                     *prometheus.GaugeVec
 	client                          *http.Client
 }
