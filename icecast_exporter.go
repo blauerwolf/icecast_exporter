@@ -89,6 +89,7 @@ type Exporter struct {
 	totalScrapes, jsonParseFailures prometheus.Counter
 	serverStart                     prometheus.Gauge
 	listeners                       *prometheus.GaugeVec
+	slowListeners			*prometheus.GaugeVec
 	streamStart                     *prometheus.GaugeVec
 	client                          *http.Client
 }
@@ -140,6 +141,11 @@ func NewExporter(uri string, timeout time.Duration) *Exporter {
 			Name:      "listeners",
 			Help:      "The number of currently connected listeners.",
 		}, labelNames),
+		slowListeners: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: namespace,
+			Name:      "slow_listeners",
+			Help:      "The number of currently slow listeners",
+		}, labelNames),
 		streamStart: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: namespace,
 			Name:      "stream_start",
@@ -159,6 +165,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.jsonParseFailures.Desc()
 	ch <- e.serverStart.Desc()
 	e.listeners.Describe(ch)
+	e.slowListeners.Describe(ch)
 	e.streamStart.Describe(ch)
 }
 
@@ -172,12 +179,14 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	defer e.mutex.Unlock()
 
 	e.listeners.Reset()
+	e.slowListeners.Reset()
 	e.streamStart.Reset()
 
 	if s := <-status; s != nil {
 		e.serverStart.Set(float64(s.Icestats.ServerStart.Time().Unix()))
 		for _, source := range s.Icestats.Source {
 			e.listeners.WithLabelValues(source.Listenurl, source.ServerType).Set(float64(source.Listeners))
+			e.slowListeners.WithLabelValues(source.Listenurl, source.ServerType).set(float64(source.SlowListeners))
 			e.streamStart.WithLabelValues(source.Listenurl, source.ServerType).Set(float64(source.StreamStart.Time().Unix()))
 		}
 	}
@@ -187,6 +196,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	ch <- e.jsonParseFailures
 	ch <- e.serverStart
 	e.listeners.Collect(ch)
+	e.slowListeners.Collect(ch)
 	e.streamStart.Collect(ch)
 }
 
