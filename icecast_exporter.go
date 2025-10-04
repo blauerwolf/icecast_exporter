@@ -58,7 +58,7 @@ func (ts *ISO8601) UnmarshalJSON(data []byte) error {
 
 type IcecastStatusSource struct {
 	Listeners   int     `json:"listeners"`
-	SlowListeners int  `json:"listeners_slow"`
+	SlowListeners int  `json:"slow_listeners"`
 	Listenurl   string  `json:"listenurl"`
 	ServerType  string  `json:"server_type"`
 	StreamStart ISO8601 `json:"stream_start_iso8601"`
